@@ -7,8 +7,9 @@
 
 import SwiftUI
 
+// SwiftUI App entry point
 @main
-struct WebViewTest2025App: App {
+struct ChatGPTWebViewApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
