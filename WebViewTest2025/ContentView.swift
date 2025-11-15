@@ -100,25 +100,20 @@ struct ContentView: View {
     @State private var viewModel = MyWebViewModel()
     
     var body: some View {
-        ZStack {
-            WebView(viewModel.webPage)
-                .ignoresSafeArea()
-                .padding()
-                .task {
-                    await viewModel.load(url: URL(string: "https://chatgpt.com")!)
-                    await viewModel.restrictToVertical(webPage: viewModel.webPage)
-                    await viewModel.list(webPage: viewModel.webPage)
-                }
-                .padding(.top)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        WebView(viewModel.webPage)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .ignoresSafeArea(edges: [.bottom])
+            .padding()
+            .task {
+                await viewModel.load(url: URL(string: "https://chatgpt.com")!)
+                await viewModel.restrictToVertical(webPage: viewModel.webPage)
+                await viewModel.list(webPage: viewModel.webPage)
+            }
     }
 }
 
 #Preview {
     ContentView()
         .preferredColorScheme(.dark)
+        .dynamicTypeSize(DynamicTypeSize.small)
 }
-
-
