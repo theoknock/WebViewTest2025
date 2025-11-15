@@ -10,61 +10,34 @@ import Observation
         webPage.load(URLRequest(url: url))
     }
     
-//    func list(webPage: WebPage) async {
-//        // After the page has finished loading, list DOM elements
-//        let js = """
-//        (function() {
-//            const all = document.getElementsByTagName('*');
-//            const elements = [];
-//            for (let i = 0; i < all.length; i++) {
-//                const el = all[i];
-//                elements.push({
-//                    tagName: el.tagName,
-//                    id: el.id || '',
-//                    className: el.className || '',
-//                    textContent: (el.textContent || '').trim().slice(0, 80)
-//                });
-//            }
-//            return elements;
-//        })();
-//        """
-//        
-//        do {
-//            if let elements = try await webPage.callJavaScript(js) as? [[String: Any]] {
-//                print("\n================ DOM ELEMENTS ================")
-//                print("Total elements: \(elements.count)")
-//                
-//                for (index, element) in elements.enumerated() {
-//                    let tagName = element["tagName"] as? String ?? "unknown"
-//                    let elementId = element["id"] as? String ?? ""
-//                    let className = element["className"] as? String ?? ""
-//                    let textPreview = element["textContent"] as? String ?? ""
-//                    
-//                    print("\n[\(index)] <\(tagName)>")
-//                    
-//                    if !elementId.isEmpty {
-//                        print("   id: \(elementId)")
-//                    }
-//                    
-//                    if !className.isEmpty {
-//                        print("   class: \(className)")
-//                    }
-//                    
-//                    if !textPreview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-//                        print("   text: \"\(textPreview)\"")
-//                    }
-//                }
-//                
-//                print("\n============== END DOM ELEMENTS ==============\n")
-//            } else {
-//                let result = try await webPage.callJavaScript(js)
-//                print("DOM script returned unexpected result:", result as Any)
-//            }
-//        } catch {
-//            print("JavaScript error:", error.localizedDescription)
-//        }
-//    }
-    
+    func restrictToVertical(webPage: WebPage) async {
+        // Wait until the page has finished loading
+        while webPage.isLoading {
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 s
+        }
+        
+        let js = """
+        const style = document.createElement('style');
+        style.textContent = `
+          html, body {
+            overflow-x: hidden !important;
+            overscroll-behavior-x: none;
+          }
+          * {
+            max-width: 100vw !important;
+            box-sizing: border-box;
+          }
+        `;
+        document.head.appendChild(style);
+        """
+        
+        do {
+            _ = try await webPage.callJavaScript(js)
+        } catch {
+            print("Failed to inject vertical-only CSS:", error)
+        }
+    }
+
     func list(webPage: WebPage) async {
         // Wait until the page has finished loading
         while webPage.isLoading {
@@ -135,6 +108,7 @@ struct ContentView: View {
                 .padding()
                 .task {
                     await viewModel.load(url: URL(string: "https://chatgpt.com")!)
+                    await viewModel.restrictToVertical(webPage: viewModel.webPage)
                     await viewModel.list(webPage: viewModel.webPage)
                 }
         }
