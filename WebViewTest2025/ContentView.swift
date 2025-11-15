@@ -38,7 +38,7 @@ import Observation
         }
     }
     
-    func list1(webPage: WebPage) async {
+    func list(webPage: WebPage) async {
         // Wait until the page has finished loading
         do {
             try? await Task(operation: {
@@ -97,7 +97,7 @@ import Observation
     }
 }
 
-    func list(webPage: WebPage) async {
+    func list1(webPage: WebPage) async {
         // Wait until the page has finished loading
         while webPage.isLoading {
             try? await Task(operation: {
