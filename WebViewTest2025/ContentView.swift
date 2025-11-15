@@ -57,103 +57,103 @@ import Observation
                 return elements;
                 """
                 
-                do {
-                    if let elements = try await webPage.callJavaScript(js) as? [String] {
-                        print("\n================ DOM ELEMENTS ================")
-                        print("Total elements: \(elements.count)")
+                //                do {
+                if let elements = try await webPage.callJavaScript(js) as? [String] {
+                    print("\n================ DOM ELEMENTS ================")
+                    print("Total elements: \(elements.count)")
+                    
+                    for (index, line) in elements.enumerated() {
+                        let parts = line.components(separatedBy: "|")
+                        let tagName = parts.count > 0 ? parts[0] : ""
+                        let elementId = parts.count > 1 ? parts[1] : ""
+                        let className = parts.count > 2 ? parts[2] : ""
+                        let textPreview = parts.count > 3 ? parts[3] : ""
                         
-                        for (index, line) in elements.enumerated() {
-                            let parts = line.components(separatedBy: "|")
-                            let tagName = parts.count > 0 ? parts[0] : ""
-                            let elementId = parts.count > 1 ? parts[1] : ""
-                            let className = parts.count > 2 ? parts[2] : ""
-                            let textPreview = parts.count > 3 ? parts[3] : ""
-                            
-                            print("\n[\(index)] <\(tagName)>")
-                            
-                            if !elementId.isEmpty {
-                                print("   id: \(elementId)")
-                            }
-                            
-                            if !className.isEmpty {
-                                print("   class: \(className)")
-                            }
-                            
-                            if !textPreview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                print("   text: \"\(textPreview)\"")
-                            }
-                        }
-                        print("\n============== END DOM ELEMENTS ==============\n")
-                    } else {
-                        let result = try await webPage.callJavaScript(js)
-                        print("DOM script returned unexpected result:", result as Any)
-                    }
-                } catch {
-                    print("JavaScript error:", error.localizedDescription)
-                }
-            })
-    } catch {
-        print("Error:", error.localizedDescription)
-    }
-}
-
-    func list1(webPage: WebPage) async {
-        // Wait until the page has finished loading
-        while webPage.isLoading {
-            try? await Task(operation: {
-                // After the page has finished loading, list DOM elements
-                let js = """
-            const all = document.getElementsByTagName('*');
-            const elements = [];
-            for (let i = 0; i < all.length; i++) {
-                const el = all[i];
-                const tagName = el.tagName;
-                const id = el.id || '';
-                const className = el.className || '';
-                const text = (el.textContent || '').trim().slice(0, 80);
-                elements.push(tagName + "|" + id + "|" + className + "|" + text);
-            }
-            return elements;
-            """
-                
-                do {
-                    if let elements = try await webPage.callJavaScript(js) as? [String] {
-                        print("\n================ DOM ELEMENTS ================")
-                        print("Total elements: \(elements.count)")
+                        print("\n[\(index)] <\(tagName)>")
                         
-                        for (index, line) in elements.enumerated() {
-                            let parts = line.components(separatedBy: "|")
-                            let tagName = parts.count > 0 ? parts[0] : ""
-                            let elementId = parts.count > 1 ? parts[1] : ""
-                            let className = parts.count > 2 ? parts[2] : ""
-                            let textPreview = parts.count > 3 ? parts[3] : ""
-                            
-                            print("\n[\(index)] <\(tagName)>")
-                            
-                            if !elementId.isEmpty {
-                                print("   id: \(elementId)")
-                            }
-                            
-                            if !className.isEmpty {
-                                print("   class: \(className)")
-                            }
-                            
-                            if !textPreview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                print("   text: \"\(textPreview)\"")
-                            }
+                        if !elementId.isEmpty {
+                            print("   id: \(elementId)")
                         }
-                        print("\n============== END DOM ELEMENTS ==============\n")
-                    } else {
-                        let result = try await webPage.callJavaScript(js)
-                        print("DOM script returned unexpected result:", result as Any)
+                        
+                        if !className.isEmpty {
+                            print("   class: \(className)")
+                        }
+                        
+                        if !textPreview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            print("   text: \"\(textPreview)\"")
+                        }
                     }
-                } catch {
-                    print("JavaScript error:", error.localizedDescription)
+                    print("\n============== END DOM ELEMENTS ==============\n")
+                } else {
+                    let result = try await webPage.callJavaScript(js)
+                    print("DOM script returned unexpected result:", result as Any)
                 }
+                //                } catch {
+                //                    print("JavaScript error:", error.localizedDescription)
+                //                }
             })
+        } catch {
+            print("Error:", error.localizedDescription)
         }
     }
 }
+
+//func list1(webPage: WebPage) async {
+//    // Wait until the page has finished loading
+//    while webPage.isLoading {
+//        try? await Task(operation: {
+//            // After the page has finished loading, list DOM elements
+//            let js = """
+//            const all = document.getElementsByTagName('*');
+//            const elements = [];
+//            for (let i = 0; i < all.length; i++) {
+//                const el = all[i];
+//                const tagName = el.tagName;
+//                const id = el.id || '';
+//                const className = el.className || '';
+//                const text = (el.textContent || '').trim().slice(0, 80);
+//                elements.push(tagName + "|" + id + "|" + className + "|" + text);
+//            }
+//            return elements;
+//            """
+//            
+//            do {
+//                if let elements = try await webPage.callJavaScript(js) as? [String] {
+//                    print("\n================ DOM ELEMENTS ================")
+//                    print("Total elements: \(elements.count)")
+//                    
+//                    for (index, line) in elements.enumerated() {
+//                        let parts = line.components(separatedBy: "|")
+//                        let tagName = parts.count > 0 ? parts[0] : ""
+//                        let elementId = parts.count > 1 ? parts[1] : ""
+//                        let className = parts.count > 2 ? parts[2] : ""
+//                        let textPreview = parts.count > 3 ? parts[3] : ""
+//                        
+//                        print("\n[\(index)] <\(tagName)>")
+//                        
+//                        if !elementId.isEmpty {
+//                            print("   id: \(elementId)")
+//                        }
+//                        
+//                        if !className.isEmpty {
+//                            print("   class: \(className)")
+//                        }
+//                        
+//                        if !textPreview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+//                            print("   text: \"\(textPreview)\"")
+//                        }
+//                    }
+//                    print("\n============== END DOM ELEMENTS ==============\n")
+//                } else {
+//                    let result = try await webPage.callJavaScript(js)
+//                    print("DOM script returned unexpected result:", result as Any)
+//                }
+//            } catch {
+//                print("JavaScript error:", error.localizedDescription)
+//            }
+//        })
+//    }
+//}
 
 
 struct ContentView: View {
